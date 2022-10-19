@@ -31,6 +31,19 @@ class ConnectFour
     end
   end
 
+  def get_players_symbols(player_one=p1, player_two=p2)
+    player_one.get_symbol
+    loop do
+      player_two.get_symbol
+      if player_one.symbol == player_two.symbol
+        puts 'You cannot have the same symbol as your partner.',
+        'Please enter a different symbol:'
+        next
+      end
+      break
+    end
+  end
+
 
   def play_game
     loop do
