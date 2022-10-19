@@ -55,7 +55,13 @@ class ConnectFour
   end
 
   def round(player)
+    puts "\n#{player.name}'s turn"
+    game_grid.display_grid
+    get_player_input(player)
+    rounds += 1
   end
+
+  
 
   def end_game?
   end
