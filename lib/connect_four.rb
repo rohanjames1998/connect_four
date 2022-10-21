@@ -61,7 +61,43 @@ class ConnectFour
     rounds += 1
   end
 
-  
+  def get_player_input(player)
+    loop do
+      input = gets.chomp
+      case
+      when input.length <= 2 || input.length >=5
+        display_no_location_error
+        display_valid_inputs
+        next
+      when input.length == 4 || input.length == 3
+        break if successfully_placed?(input)
+        display_no_location_error
+        next
+      end
+    end
+  end
+
+  def successfully_placed?(input)
+  end
+
+  # This function just contains a string that can be used
+  # to tell the user about different formats of valid input.
+  # Main use of this function is to DRY the code.
+  def display_valid_inputs
+   puts "There are two different types of input format supported in this game.
+    Type 1 = R1C1. Here 'R1' is the row coordinate and 'C1' is the column coordinate. Note there 
+    are no spaces or commas between the characters.
+    Type 2 = 1, 1. This is also a valid short hand. Note that each character is
+    separated by a single comma.
+
+    Input format of any other form is considered invalid!"
+  end
+
+  def display_no_location_error
+    puts 'That place already contains a symbol.',
+          'Or that place  doesn\'t exist.',
+          'Please enter a different location.'
+  end
 
   def end_game?
   end
