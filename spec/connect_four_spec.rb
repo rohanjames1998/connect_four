@@ -80,43 +80,35 @@ describe ConnectFour do
     subject(:my_game) { described_class.new(my_grid) }
     let(:my_grid) { instance_double(Grid) }
     context 'When given coordinates are invalid' do
-      xit 'asks for valid coordinates until they are given' do
-        invalid_input = 'x0x0'
+      it 'asks for valid coordinates until they are given' do
+        invalid_input_one = 'x0x0'
+        invalid_input_two = 'abcd'
+        invalid_input_three = 'r, c'
         valid_input = 'r1c3'
-        allow(my_game).to receive(:gets).and_return(invalid_input, valid_input)
-        expect(my_grid).to receive(:find_ele_from_str).twice
-        my_game.get_player_input(player_one)
-      end
-    end
-
-    context 'When there is already a symbol at given coordinates' do
-      before do
-        allow(player_one).to receive(:symbol).and_return('x')
-        allow(player_two).to receive(:symbol).and_return('y')
-      end
-      xit 'asks for new coordinates where no symbol is present' do
-        my_grid[1, 1] = player_one.symbol
-        allow(my_game).to receive(:gets).and_return('r1c1', 'r1c2')
-        expect(my_game).to receive(:find_ele_from_str).twice
+        allow(my_game).to receive(:successfully_placed?).and_return(false, false, false, true)
+        allow(my_game).to receive(:gets).and_return(invalid_input_one, invalid_input_two, invalid_input_three, valid_input)
+        expect(my_game).to receive(:display_no_location_error).exactly(3).times
         my_game.get_player_input(player_one)
       end
     end
 
     context 'When given valid input' do
-      xit 'adds player symbol at the given location' do
+      it 'Does not display error' do
         valid_input = 'r3c4'
-        player_symbol = player_one.symbol
         allow(my_game).to receive(:gets).and_return(valid_input)
+        allow(my_game).to receive(:successfully_placed?).and_return(true)
+        expect(my_game).not_to receive(:display_no_location_error)
         my_game.get_player_input(player_one)
-        expect(my_grid[3, 4]).to eq(player_symbol)
       end
     end
     context 'When given valid input in alternative form' do
-      xit 'accepts it as valid input' do
+      it 'accepts it as valid input' do
         alt_valid_input = '4, 5'
         allow(my_game).to receive(:gets).and_return(alt_valid_input)
+        allow(my_game).to receive(:successfully_placed?).and_return(true)
         # When given alternative input we use #[] instead of #find_ele_from_str
-        expect(my_grid).to receive(:[]).once
+        expect(my_game).not_to receive(:display_no_location_error)
+        my_game.get_player_input(player_one)
       end
     end
   end
