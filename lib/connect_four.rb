@@ -66,18 +66,25 @@ class ConnectFour
       input = gets.chomp
       case
       when input.length <= 2 || input.length >=5
-        display_no_location_error
+        display_input_error
         display_valid_inputs
         next
       when input.length == 4 || input.length == 3
-        break if successfully_placed?(input)
-        display_no_location_error
+        break if successfully_placed?(input, player)
+        display_input_error
         next
       end
     end
   end
 
-  def successfully_placed?(input)
+  def successfully_placed?(input, player)
+    row, col = game_grid.str_to_location(input)
+    symbol = player.symbol
+    if game_grid[row, col] == " " && game_grid[row - 1, col] != " "
+      game_grid[row, col] = symbol
+      return true
+    end
+    return false
   end
 
   # This function just contains a string that can be used
@@ -93,14 +100,13 @@ class ConnectFour
     Input format of any other form is considered invalid!"
   end
 
-  def display_no_location_error
-    puts 'That place already contains a symbol.',
-          'Or that place  doesn\'t exist.',
+  def display_input_error
+    puts  'Invalid location.',
           'Please enter a different location.'
   end
 
   def end_game?
   end
-
 end
+
 

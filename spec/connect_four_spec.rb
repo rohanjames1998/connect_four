@@ -120,24 +120,35 @@ describe ConnectFour do
     context 'When given valid input' do
       it 'places player symbol on the grid' do
         player_symbol = player_one.symbol
-        valid_input = '3,4'
+        valid_input = '1,1'
         place_sym_game.successfully_placed?(valid_input, player_one)
-        ele_in_place = place_sym_game.game_grid[3, 4]
+        ele_in_place = place_sym_game.game_grid[1,1]
         expect(ele_in_place).to eq(player_symbol)
       end
 
       it 'returns true' do
-      valid_input = 'r4c6'
+      valid_input = 'r1c1'
       returned_val = place_sym_game.successfully_placed?(valid_input, player_one)
       expect(returned_val).to eq(true)
       end
     end
-    context 'When given invalid input' do
+    context 'When given location that doesn\'t exist on the grid' do
       it 'returns false' do
         invalid_input = '0,0'
         returned_val = place_sym_game.successfully_placed?(invalid_input, player_one)
         expect(returned_val).to eq(false)
       end
     end
+    context 'When user try to place their symbol at invalid location' do
+    # A valid location is:
+    # Any col of the bottom most row.
+    # Any col which has a symbol on the col below it.
+    it 'returns false' do
+      invalid_location = '3,4'
+      returned_val = place_sym_game.successfully_placed?(invalid_location, player_one)
+      expect(returned_val).to eq(false)
+    end
+  end
+
   end
 end
