@@ -78,7 +78,6 @@ describe ConnectFour do
 
   describe '#get_player_input' do
     subject(:my_game) { described_class.new(my_grid) }
-    let(:my_grid) { instance_double(Grid) }
     context 'When given coordinates are invalid' do
       it 'asks for valid coordinates until they are given' do
         invalid_input_one = 'x0x0'
@@ -109,6 +108,34 @@ describe ConnectFour do
         # When given alternative input we use #[] instead of #find_ele_from_str
         expect(my_game).not_to receive(:display_no_location_error)
         my_game.get_player_input(player_one)
+      end
+    end
+  end
+
+  describe '#successfully_placed?' do
+    subject(:place_sym_game) { described_class.new(my_grid) }
+    let(:my_grid) { instance_double(Grid) }
+
+    context 'When given valid input' do
+      xit 'places player symbol on the grid' do
+        player_symbol = player_one.symbol
+        valid_input = '3, 4'
+        place_sym_game.successfully_placed?(valid_input, player_one)
+        expect(my_grid[3, 4]).to eq(player_symbol)
+      end
+
+      xit 'returns true' do
+      valid_input = 'r4c6'
+      return_val = place_sym_game.successfully_placed?(valid_input, player_one)
+      expect(returned_val).to eq(true)
+      end
+    end
+
+    context 'When given invalid input' do
+      xit 'returns false' do
+        invalid_input = '0,0'
+        returned_val = place_sym_game.successfully_placed(invalid_input, player_one)
+        expect(returned_val).to eq(false)
       end
     end
   end
