@@ -77,7 +77,7 @@ describe ConnectFour do
   end
 
   describe '#get_player_input' do
-    subject(:my_game) { described_class.new(my_grid) }
+    subject(:my_game) { described_class.new }
     context 'When given coordinates are invalid' do
       it 'asks for valid coordinates until they are given' do
         invalid_input_one = 'x0x0'
@@ -86,7 +86,7 @@ describe ConnectFour do
         valid_input = 'r1c3'
         allow(my_game).to receive(:successfully_placed?).and_return(false, false, false, true)
         allow(my_game).to receive(:gets).and_return(invalid_input_one, invalid_input_two, invalid_input_three, valid_input)
-        expect(my_game).to receive(:display_no_location_error).exactly(3).times
+        expect(my_game).to receive(:display_input_error).exactly(3).times
         my_game.get_player_input(player_one)
       end
     end
@@ -96,7 +96,7 @@ describe ConnectFour do
         valid_input = 'r3c4'
         allow(my_game).to receive(:gets).and_return(valid_input)
         allow(my_game).to receive(:successfully_placed?).and_return(true)
-        expect(my_game).not_to receive(:display_no_location_error)
+        expect(my_game).not_to receive(:display_input_error)
         my_game.get_player_input(player_one)
       end
     end
@@ -105,36 +105,37 @@ describe ConnectFour do
         alt_valid_input = '4, 5'
         allow(my_game).to receive(:gets).and_return(alt_valid_input)
         allow(my_game).to receive(:successfully_placed?).and_return(true)
-        # When given alternative input we use #[] instead of #find_ele_from_str
-        expect(my_game).not_to receive(:display_no_location_error)
+        expect(my_game).not_to receive(:display_input_error)
         my_game.get_player_input(player_one)
       end
     end
   end
 
   describe '#successfully_placed?' do
-    subject(:place_sym_game) { described_class.new(my_grid) }
-    let(:my_grid) { instance_double(Grid) }
+    subject(:place_sym_game) { described_class.new }
+    before do
+      allow(player_one).to receive(:symbol).and_return('x')
+    end
 
     context 'When given valid input' do
-      xit 'places player symbol on the grid' do
+      it 'places player symbol on the grid' do
         player_symbol = player_one.symbol
-        valid_input = '3, 4'
+        valid_input = '3,4'
         place_sym_game.successfully_placed?(valid_input, player_one)
-        expect(my_grid[3, 4]).to eq(player_symbol)
+        ele_in_place = place_sym_game.game_grid[3, 4]
+        expect(ele_in_place).to eq(player_symbol)
       end
 
-      xit 'returns true' do
+      it 'returns true' do
       valid_input = 'r4c6'
-      return_val = place_sym_game.successfully_placed?(valid_input, player_one)
+      returned_val = place_sym_game.successfully_placed?(valid_input, player_one)
       expect(returned_val).to eq(true)
       end
     end
-
     context 'When given invalid input' do
-      xit 'returns false' do
+      it 'returns false' do
         invalid_input = '0,0'
-        returned_val = place_sym_game.successfully_placed(invalid_input, player_one)
+        returned_val = place_sym_game.successfully_placed?(invalid_input, player_one)
         expect(returned_val).to eq(false)
       end
     end
