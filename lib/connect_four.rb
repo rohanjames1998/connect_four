@@ -171,4 +171,17 @@ class ConnectFour
       rounds = saved_data['rounds']
     end
   end
+
+  def get_file_name
+    loop do
+      name = get.chomp.downcase
+      file_name_with_path = File.join('./saved_games', name)
+      if File.exist?("#{file_name_with_path}.json")
+        return "#{file_name_with_path}.json"
+      else
+        print "Please enter a valid file name:"
+        next
+      end
+    end
+  end
 end
