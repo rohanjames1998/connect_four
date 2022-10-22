@@ -132,4 +132,12 @@ class ConnectFour
       end
     end
   end
+
+  def convert_to_json(p1, p2, game_grid, rounds)
+    hash = {
+      'p1' => p1
+      'p2' => p2
+      'game_grid' => game_grid
+      'rounds' => rounds
+    }.to_json
 end
