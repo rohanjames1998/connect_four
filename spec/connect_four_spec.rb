@@ -6,9 +6,6 @@ describe ConnectFour do
   subject(:new_game) { described_class.new }
   let(:player_one) { instance_double(Player) }
   let(:player_two) { instance_double(Player) }
-  before do
-    allow(STDOUT).to receive(:puts)
-  end
 
   describe '#get_player_names' do
     context 'When called' do
@@ -88,8 +85,7 @@ describe ConnectFour do
         invalid_input_three = 'r, c'
         valid_input = 'r1c3'
         allow(my_game).to receive(:successfully_placed?).and_return(false, false, false, true)
-        allow(my_game).to receive(:gets).and_return(invalid_input_one, invalid_input_two, invalid_input_three,
-                                                    valid_input)
+        allow(my_game).to receive(:gets).and_return(invalid_input_one, invalid_input_two, invalid_input_three, valid_input)
         expect(my_game).to receive(:display_input_error).exactly(3).times
         my_game.get_player_input(player_one)
       end
@@ -126,14 +122,14 @@ describe ConnectFour do
         player_symbol = player_one.symbol
         valid_input = '1,1'
         place_sym_game.successfully_placed?(valid_input, player_one)
-        ele_in_place = place_sym_game.game_grid[1, 1]
+        ele_in_place = place_sym_game.game_grid[1,1]
         expect(ele_in_place).to eq(player_symbol)
       end
 
       it 'returns true' do
-        valid_input = 'r1c1'
-        returned_val = place_sym_game.successfully_placed?(valid_input, player_one)
-        expect(returned_val).to eq(true)
+      valid_input = 'r1c1'
+      returned_val = place_sym_game.successfully_placed?(valid_input, player_one)
+      expect(returned_val).to eq(true)
       end
     end
     context 'When given location that doesn\'t exist on the grid' do
@@ -144,40 +140,15 @@ describe ConnectFour do
       end
     end
     context 'When user try to place their symbol at invalid location' do
-      # A valid location is:
-      # Any col of the bottom most row.
-      # Any col which has a symbol on the col below it.
-      it 'returns false' do
-        invalid_location = '3,4'
-        returned_val = place_sym_game.successfully_placed?(invalid_location, player_one)
-        expect(returned_val).to eq(false)
-      end
+    # A valid location is:
+    # Any col of the bottom most row.
+    # Any col which has a symbol on the col below it.
+    it 'returns false' do
+      invalid_location = '3,4'
+      returned_val = place_sym_game.successfully_placed?(invalid_location, player_one)
+      expect(returned_val).to eq(false)
     end
   end
 
-  describe '#save_game' do
-    subject(:save_my_game) { described_class.new }
-    context 'When called' do
-      xit 'asks for save file name' do
-        expect(save_my_game).to receive(:gets).once
-        save_my_game.save_game
-      end
-    end
-    context 'When a file with the same name exists' do
-      xit 'asks user to choose a different name' do
-        allow(save_my_game).to receive(File.exists?).and_return(true)
-        allow(save_my_game).to receive(:gets).and_return('my_game1')
-        expect(save_my_game).to receive(:gets).twice
-        save_my_game.save_game
-      end
-    end
-    context 'When given valid file name' do
-      xit 'writes current game state in the file' do
-        allow(save_my_game).to receive(:gets).and_return('epic_game')
-        expect(File).to receive(:open).with('w')
-        expect(save_my_game).to receive(:convert_to_json)
-        save_my_game.save_game
-      end
-    end
   end
 end
