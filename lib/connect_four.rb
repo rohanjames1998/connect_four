@@ -156,5 +156,19 @@ class ConnectFour
   end
 
   def load_saved_game
+    path = '../saved_games'
+    puts "\nPlease choose a save file:"
+    Dir.each_child(path) do |file|
+      saved_file_name = file.split('.')[0]
+      puts saved_file_name #Showing file names to for user to choose from.
+    end
+      file_selected = get_file_name
+      file_selected = File.read(user_input)
+      saved_data = JSON.parse(file_selected)
+      p1 = saved_data['p1']
+      p2 = saved_data['p2']
+      game_grid = saved_data['game_grid']
+      rounds = saved_data['rounds']
+    end
   end
 end
