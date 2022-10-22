@@ -1,6 +1,7 @@
 require_relative 'player'
 require_relative 'grid'
 require 'json'
+require 'pry-byebug'
 
 class ConnectFour
   attr_reader :game_grid, :rounds, :p1, :p2
@@ -132,29 +133,58 @@ class ConnectFour
     horizontally_aligned = check_horizontal_alignment(player)
     diagonally_aligned = check_diagonal_alignment(player)
     if vertically_aligned || horizontally_aligned || diagonally_aligned
-      congrats_screen
+      congrats_screen(player)
       return true
     end
   end
 
   def check_vertical_alignment(player)
-    r = 0
-    c = 0
+    player_sym = player.symbol
+    row = 0
+    col = 0
     aligned_array = []
-    while r <= 7
-      r += 1
-      c = 0
-    while c <= 6
-     if game_grid[r, c] == player.symbol
-      aligned_array << player.symbol
-      return true if aligned_array.length == 4
-     else
-      c += 1
-      aligned_array = []
-     end
+    # Outer loop makes sure we loop through all the columns
+    while col <= 6
+      # Inner loop runs for each row and checks if there is any alignment
+      # if there is it returns true. If not it moves to the next row and goes on until
+      # it reaches the last row. Then it moves to the next column.
+      while row <= 6
+        row += 1
+        if game_grid[row, col] == player_sym
+          aligned_array << player_sym
+          return true if aligned_array.length == 4
+        else
+          aligned_array = []
+        end
+      end
+      col += 1
+      row = 0
     end
+    return false
   end
-end
+
+  def check_horizontal_alignment(player)
+    player_sym = player.symbol
+    row = 0
+    col = 0
+    aligned_array = []
+    while row <= 6
+      row += 1
+      while col <= 6
+        if game_grid[row, col] == player_sym
+          aligned_array << player_sym
+          return true if aligned_array.length == 4
+        else
+          aligned_array = []
+        end
+        col += 1
+      end
+      col = 0
+    end
+    return false
+  end
+
+
 
   private
 
