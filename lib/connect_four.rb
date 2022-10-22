@@ -13,9 +13,22 @@ class ConnectFour
   end
 
   def start_game
-    get_players_names
-    get_players_symbols
-    play_game
+    print 'Do you want to play a saved game[Y/N]:'
+    loop do
+      choice = gets.chomp.upcase
+      if choice == 'Y'
+        load_saved_game
+        play_game
+      elsif choice =='N'
+        get_players_names
+        get_players_symbols
+        play_game
+      else
+        'Please enter Y if u want to play a saved gamed.',
+        'Or N if you want to play a new game.'
+        next
+      end
+    end
   end
 
   def get_players_names(player_one = p1, player_two = p2)
@@ -140,4 +153,8 @@ class ConnectFour
       'game_grid' => game_grid
       'rounds' => rounds
     }.to_json
+  end
+
+  def load_saved_game
+  end
 end
