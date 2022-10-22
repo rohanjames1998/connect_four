@@ -85,7 +85,8 @@ describe ConnectFour do
         invalid_input_three = 'r, c'
         valid_input = 'r1c3'
         allow(my_game).to receive(:successfully_placed?).and_return(false, false, false, true)
-        allow(my_game).to receive(:gets).and_return(invalid_input_one, invalid_input_two, invalid_input_three, valid_input)
+        allow(my_game).to receive(:gets).and_return(invalid_input_one, invalid_input_two, invalid_input_three,
+                                                    valid_input)
         expect(my_game).to receive(:display_input_error).exactly(3).times
         my_game.get_player_input(player_one)
       end
@@ -109,46 +110,76 @@ describe ConnectFour do
         my_game.get_player_input(player_one)
       end
     end
+
+    describe '#successfully_placed?' do
+      subject(:place_sym_game) { described_class.new }
+      before do
+        allow(player_one).to receive(:symbol).and_return('x')
+      end
+
+      context 'When given valid input' do
+        it 'places player symbol on the grid' do
+          player_symbol = player_one.symbol
+          valid_input = '1,1'
+          place_sym_game.successfully_placed?(valid_input, player_one)
+          ele_in_place = place_sym_game.game_grid[1, 1]
+          expect(ele_in_place).to eq(player_symbol)
+        end
+
+        it 'returns true' do
+          valid_input = 'r1c1'
+          returned_val = place_sym_game.successfully_placed?(valid_input, player_one)
+          expect(returned_val).to eq(true)
+        end
+      end
+      context 'When given location that doesn\'t exist on the grid' do
+        it 'returns false' do
+          invalid_input = '0,0'
+          returned_val = place_sym_game.successfully_placed?(invalid_input, player_one)
+          expect(returned_val).to eq(false)
+        end
+      end
+      context 'When user try to place their symbol at invalid location' do
+        # A valid location is:
+        # Any col of the bottom most row.
+        # Any col which has a symbol on the col below it.
+        it 'returns false' do
+          invalid_location = '3,4'
+          returned_val = place_sym_game.successfully_placed?(invalid_location, player_one)
+          expect(returned_val).to eq(false)
+        end
+      end
+    end
   end
 
-  describe '#successfully_placed?' do
-    subject(:place_sym_game) { described_class.new }
+  describe '#check_vertical_alignment' do
     before do
       allow(player_one).to receive(:symbol).and_return('x')
     end
-
-    context 'When given valid input' do
-      it 'places player symbol on the grid' do
-        player_symbol = player_one.symbol
-        valid_input = '1,1'
-        place_sym_game.successfully_placed?(valid_input, player_one)
-        ele_in_place = place_sym_game.game_grid[1,1]
-        expect(ele_in_place).to eq(player_symbol)
+    context 'When elements of the grids are empty spaces' do
+      it 'Doesn\'t return true' do
+        returned_val = new_game.check_vertical_alignment(player_one)
+        expect(returned_val).not_to eq(true)
+      end
+    end
+    context 'When there is vertical alignment anywhere on the grid' do
+      it 'returns true for random condition 1' do
+      new_game.game_grid[0, 0] = 'x'
+      new_game.game_grid[1, 0] = 'x'
+      new_game.game_grid[2, 0] = 'x'
+      new_game.game_grid[3, 0] = 'x'
+      returned_val = new_game.check_vertical_alignment(player_one)
+      expect(returned_val).to eq(true)
       end
 
-      it 'returns true' do
-      valid_input = 'r1c1'
-      returned_val = place_sym_game.successfully_placed?(valid_input, player_one)
+      it 'returns true for random condition 2' do
+      new_game.game_grid[3, 2] = 'x'
+      new_game.game_grid[4, 2] = 'x'
+      new_game.game_grid[5, 2] = 'x'
+      new_game.game_grid[6, 2] = 'x'
+      returned_val = new_game.check_vertical_alignment(player_one)
       expect(returned_val).to eq(true)
       end
     end
-    context 'When given location that doesn\'t exist on the grid' do
-      it 'returns false' do
-        invalid_input = '0,0'
-        returned_val = place_sym_game.successfully_placed?(invalid_input, player_one)
-        expect(returned_val).to eq(false)
-      end
-    end
-    context 'When user try to place their symbol at invalid location' do
-    # A valid location is:
-    # Any col of the bottom most row.
-    # Any col which has a symbol on the col below it.
-    it 'returns false' do
-      invalid_location = '3,4'
-      returned_val = place_sym_game.successfully_placed?(invalid_location, player_one)
-      expect(returned_val).to eq(false)
-    end
-  end
-
   end
 end
