@@ -1,6 +1,7 @@
 require_relative 'player'
 require_relative 'grid'
 require 'json'
+require 'fileutils'
 
 class ConnectFour
   attr_reader :game_grid, :rounds, :p1, :p2, :quit
@@ -94,6 +95,7 @@ class ConnectFour
         break
       when input == 'save'
         save_game
+        game_grid.display_grid
         next
       when input.length <= 2 || input.length >= 5
         display_input_error
@@ -281,7 +283,9 @@ class ConnectFour
       print "\nEnter the name of your save file:"
       file_name = gets.chomp.downcase.strip
       file_name += '.json'
-      complete_file_name = File.join('./saved_games', file_name)
+      path = './saved_games'
+      FileUtils.mkdir_p(path) unless File.exist?(path)
+      complete_file_name = File.join(path, file_name)
       if File.exists?(complete_file_name)
         puts 'A save file with that name already exists.'
              next
@@ -305,7 +309,7 @@ class ConnectFour
   end
 
   def load_saved_game
-    path = '../saved_games'
+    path = './saved_games'
     puts "\nPlease choose a save file:"
     Dir.each_child(path) do |file|
       saved_file_name = file.split('.')[0]
@@ -323,7 +327,7 @@ class ConnectFour
 
   def get_file_name
     loop do
-      name = get.chomp.downcase.strip
+      name = gets.chomp.downcase.strip
       file_name_with_path = File.join('./saved_games', name)
       if File.exist?("#{file_name_with_path}.json")
         return "#{file_name_with_path}.json"
