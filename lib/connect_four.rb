@@ -129,16 +129,16 @@ class ConnectFour
   end
 
   def end_game?(player)
-    vertically_aligned = check_vertical_alignment(player)
-    horizontally_aligned = check_horizontal_alignment(player)
-    diagonally_aligned = check_diagonal_alignment(player)
+    vertically_aligned = vertical_alignment?(player)
+    horizontally_aligned = horizontal_alignment?(player)
+    diagonally_aligned = diagonal_alignment?(player)
     if vertically_aligned || horizontally_aligned || diagonally_aligned
       congrats_screen(player)
       return true
     end
   end
 
-  def check_vertical_alignment(player)
+  def vertical_alignment?(player)
     player_sym = player.symbol
     row = 0
     col = 0
@@ -163,13 +163,15 @@ class ConnectFour
     return false
   end
 
-  def check_horizontal_alignment(player)
+  def horizontal_alignment?(player)
     player_sym = player.symbol
     row = 0
     col = 0
     aligned_array = []
+    #Outer loops cuts of when we check every row
     while row <= 6
       row += 1
+      #Inner loop runs through each column's element and checks for alignment.
       while col <= 6
         if game_grid[row, col] == player_sym
           aligned_array << player_sym
@@ -183,6 +185,46 @@ class ConnectFour
     end
     return false
   end
+
+  def diagonal_alignment?(player)
+    return aligned_to_right? || aligned_to_left? ? true : false
+  end
+
+  def aligned_to_right?(player)
+    player_sym = player.symbol
+    # This variable is gonna make sure we only check upto
+    # row 3 because from row 4 and above there cannot be any diagonal alignment.
+    base_row = 1
+    aligned_array = []
+    # This variable will increase the col by one after we check for each case
+    # e.g., after checking [[1,0],[2,1],[3,2],[3,3]] we will need to check
+    # [[1,1],[2,2],[3,3][4,4]].
+    base_col = 0
+    while base_row <= 3
+      row = base_row
+      while base_col <= 6
+        col = base_col
+        while col <= 6
+          if game_grid[row, col] == player_sym
+            aligned_array << player_sym
+            return true if aligned_array.length == 4
+          else
+            aligned_array = []
+          end
+          row += 1
+          col += 1
+        end
+        base_col += 1
+        # Resetting row back base row as we increase base col
+        row = base_row
+      end
+      base_row += 1
+    end
+    return false
+  end
+
+
+
 
 
 
