@@ -20,6 +20,7 @@ class ConnectFour
         load_saved_game
         play_game
       elsif choice =='N'
+        display_instructions
         get_players_names
         get_players_symbols
         play_game
@@ -126,6 +127,14 @@ class ConnectFour
     puts  'Invalid location.',
           'Please enter a different location.'
   end
+
+  def display_instructions
+    puts "\nThe goal of this game is to align four of your symbols vertically, horizontally or diagonally."
+         "Each round you would be prompted to enter the place where you want to put your symbol."
+         "Instead of putting in coordinates for your symbol placement you can also use the follow keywords:"
+         "1. Quit: To end the game."
+         "2. Save&Quit: To save and quit the game."
+         "3. Save: To save the game in its current state. You can load this game when you play the game again in the future."
 
   def end_game?(player)
     vertically_aligned = vertical_alignment?(player)
