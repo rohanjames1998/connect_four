@@ -1,7 +1,6 @@
 require_relative 'player'
 require_relative 'grid'
 require 'json'
-require 'pry-byebug'
 
 class ConnectFour
   attr_reader :game_grid, :rounds, :p1, :p2
@@ -223,6 +222,38 @@ class ConnectFour
     return false
   end
 
+  def aligned_to_left?(player)
+    player_sym = player.symbol
+    # This variable is gonna make sure we only check upto
+    # row 3 because from row 4 and above there cannot be any diagonal alignment.
+    base_row = 1
+    aligned_array = []
+    # This variable will increase the col by one after we check for each case
+    # e.g., after checking [[1,0],[2,1],[3,2],[3,3]] we will need to check
+    # [[1,1],[2,2],[3,3][4,4]].
+    base_col = 6
+    while base_row <= 3
+      row = base_row
+      while base_col >= 3
+        col = base_col
+        while col >= 0
+          if game_grid[row, col] == player_sym
+            aligned_array << player_sym
+            return true if aligned_array.length == 4
+          else
+            aligned_array = []
+          end
+          row += 1
+          col -= 1
+        end
+        base_col -= 1
+        # Resetting row back base row as we increase base col
+        row = base_row
+      end
+      base_row += 1
+    end
+    return false
+  end
 
 
 
