@@ -155,7 +155,7 @@ describe ConnectFour do
       end
     end
     context 'When there is vertical alignment anywhere on the grid' do
-      it 'returns true for random condition 1' do
+      it 'returns true for normal case ' do
       new_game.game_grid[1, 0] = 'x'
       new_game.game_grid[2, 0] = 'x'
       new_game.game_grid[3, 0] = 'x'
@@ -164,13 +164,22 @@ describe ConnectFour do
       expect(returned_val).to be true
       end
 
-      it 'returns true for random condition 2' do
+      it 'returns true for middle case' do
+      new_game.game_grid[2, 2] = 'x'
       new_game.game_grid[3, 2] = 'x'
       new_game.game_grid[4, 2] = 'x'
       new_game.game_grid[5, 2] = 'x'
-      new_game.game_grid[6, 2] = 'x'
       returned_val = new_game.vertical_alignment?(player_one)
       expect(returned_val).to be true
+      end
+
+      it 'returns true for corner case' do
+        new_game.game_grid[6, 6] = 'x'
+        new_game.game_grid[5, 6] = 'x'
+        new_game.game_grid[4, 6] = 'x'
+        new_game.game_grid[3, 6] = 'x'
+        returned_val = new_game.vertical_alignment?(player_one)
+        expect(returned_val).to be true
       end
     end
   end
@@ -183,7 +192,7 @@ describe ConnectFour do
       end
     end
     context 'When there is horizontal alignment anywhere on the grid' do
-      it 'returns true for random condition 1' do
+      it 'returns true for normal' do
       new_game.game_grid[1, 0] = 'x'
       new_game.game_grid[1, 1] = 'x'
       new_game.game_grid[1, 2] = 'x'
@@ -192,49 +201,95 @@ describe ConnectFour do
       expect(returned_val).to be true
       end
 
-      it 'returns true for random condition 2' do
-      new_game.game_grid[4, 6] = 'x'
+      it 'returns true for random middle case' do
       new_game.game_grid[4, 5] = 'x'
       new_game.game_grid[4, 4] = 'x'
       new_game.game_grid[4, 3] = 'x'
+      new_game.game_grid[4, 2] = 'x'
       returned_val = new_game.horizontal_alignment?(player_one)
       expect(returned_val).to be true
+      end
+
+      it 'returns true for corner case' do
+        new_game.game_grid[6, 6] = 'x'
+        new_game.game_grid[6, 5] = 'x'
+        new_game.game_grid[6, 4] = 'x'
+        new_game.game_grid[6, 3] = 'x'
+        returned_val = new_game.horizontal_alignment?(player_one)
+        expect(returned_val).to be true
       end
     end
   end
 
-  describe "#aligned_to_right" do
+  describe "#aligned_to_right?" do
     context 'When elements are empty spaces' do
-      xit 'returns false' do
-        returned_val = new_game.aligned_to_right?
+      it 'returns false' do
+        returned_val = new_game.aligned_to_right?(player_one)
         expect(returned_val).to be false
       end
     end
     context 'When there is right leaning diagonal alignment anywhere on the grid' do
-      xit 'returns true for random condition 1' do
+      it 'returns true for normal case' do
       new_game.game_grid[1, 0] = 'x'
       new_game.game_grid[2, 1] = 'x'
       new_game.game_grid[3, 2] = 'x'
       new_game.game_grid[4, 3] = 'x'
-      returned_val = new_game.aligned_to_right?
+      returned_val = new_game.aligned_to_right?(player_one)
       expect(returned_val).to be true
       end
 
-      xit 'returns true for random condition 2' do
+      it 'returns true for middle case' do
       new_game.game_grid[3, 3] = 'x'
       new_game.game_grid[4, 4] = 'x'
       new_game.game_grid[5, 5] = 'x'
       new_game.game_grid[6, 6] = 'x'
-      returned_val = new_game.aligned_to_right?
+      returned_val = new_game.aligned_to_right?(player_one)
       expect(returned_val).to be true
       end
 
-      xit 'returns true for random condition 3' do
+      it 'returns true for corner case' do
         new_game.game_grid[2, 1] = 'x'
         new_game.game_grid[3, 2] = 'x'
         new_game.game_grid[4, 3] = 'x'
         new_game.game_grid[5, 4] = 'x'
-        returned_val = new_game.aligned_to_right?
+        returned_val = new_game.aligned_to_right?(player_one)
+        expect(returned_val).to be true
+      end
+    end
+  end
+
+  describe '#aligned_to_left?' do
+    context 'When elements are empty spaces' do
+      it 'returns false' do
+        returned_val = new_game.aligned_to_left?(player_one)
+        expect(returned_val).to be false
+      end
+    end
+    context 'When there is left leaning diagonal alignment anywhere on the grid' do
+      it 'returns true for normal case' do
+        new_game.game_grid[1, 6] = 'x'
+        new_game.game_grid[2, 5] = 'x'
+        new_game.game_grid[3, 4] = 'x'
+        new_game.game_grid[4, 3] = 'x'
+        returned_val = new_game.aligned_to_left?(player_one)
+        expect(returned_val).to be true
+      end
+
+      it 'returns true for middle case' do
+        new_game.game_grid[2, 5] = 'x'
+        new_game.game_grid[3, 4] = 'x'
+        new_game.game_grid[4, 3] = 'x'
+        new_game.game_grid[5, 2] = 'x'
+        returned_val = new_game.aligned_to_left?(player_one)
+        expect(returned_val).to be true
+      end
+
+      it 'returns true for corner case' do
+        new_game.game_grid[3, 3] = 'x'
+        new_game.game_grid[4, 2] = 'x'
+        new_game.game_grid[5, 1] = 'x'
+        new_game.game_grid[6, 0] = 'x'
+        returned_val = new_game.aligned_to_left?(player_one)
         expect(returned_val).to be true
       end
     end
