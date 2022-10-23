@@ -1,18 +1,21 @@
 require_relative '../lib/connect_four'
 require_relative '../lib/player'
 require_relative '../lib/grid'
+require 'pry-byebug'
 
 describe ConnectFour do
   subject(:new_game) { described_class.new }
   let(:player_one) { instance_double(Player) }
   let(:player_two) { instance_double(Player) }
+  before do
+    allow(player_one).to receive(:name).and_return('jon')
+    allow(player_two).to receive(:name).and_return('snow')
+    allow(player_one).to receive(:symbol).and_return('x')
+    allow(player_two).to receive(:symbol).and_return('y')
+  end
 
   describe '#get_player_names' do
     context 'When called' do
-      before do
-        allow(player_one).to receive(:name).and_return('jon')
-        allow(player_two).to receive(:name).and_return('snow')
-      end
       it 'calls #get_name on both players' do
         expect(player_one).to receive(:get_name).once
         expect(player_two).to receive(:get_name).once
@@ -34,10 +37,6 @@ describe ConnectFour do
   end
 
   describe '#get_players_symbols' do
-    before do
-      allow(player_one).to receive(:symbol).and_return('x')
-      allow(player_two).to receive(:symbol).and_return('y')
-    end
     context 'When called' do
       it 'calls #get_symbol on both players' do
         expect(player_one).to receive(:get_symbol).once
@@ -48,7 +47,6 @@ describe ConnectFour do
 
     context 'If player two has the same symbol as player one' do
       before do
-        allow(player_one).to receive(:symbol).and_return('x')
         allow(player_two).to receive(:symbol).and_return('x', 'y')
       end
       it 'asks for a different symbol until one is given' do
@@ -113,9 +111,6 @@ describe ConnectFour do
 
     describe '#successfully_placed?' do
       subject(:place_sym_game) { described_class.new }
-      before do
-        allow(player_one).to receive(:symbol).and_return('x')
-      end
 
       context 'When given valid input' do
         it 'places player symbol on the grid' do
@@ -152,24 +147,21 @@ describe ConnectFour do
     end
   end
 
-  describe '#check_vertical_alignment' do
-    before do
-      allow(player_one).to receive(:symbol).and_return('x')
-    end
+  describe '#vertical_alignment?' do
     context 'When elements of the grids are empty spaces' do
-      it 'Doesn\'t return true' do
-        returned_val = new_game.check_vertical_alignment(player_one)
-        expect(returned_val).not_to eq(true)
+      it 'returns false' do
+        returned_val = new_game.vertical_alignment?(player_one)
+        expect(returned_val).to be false
       end
     end
     context 'When there is vertical alignment anywhere on the grid' do
       it 'returns true for random condition 1' do
-      new_game.game_grid[0, 0] = 'x'
       new_game.game_grid[1, 0] = 'x'
       new_game.game_grid[2, 0] = 'x'
       new_game.game_grid[3, 0] = 'x'
-      returned_val = new_game.check_vertical_alignment(player_one)
-      expect(returned_val).to eq(true)
+      new_game.game_grid[4, 0] = 'x'
+      returned_val = new_game.vertical_alignment?(player_one)
+      expect(returned_val).to be true
       end
 
       it 'returns true for random condition 2' do
@@ -177,8 +169,73 @@ describe ConnectFour do
       new_game.game_grid[4, 2] = 'x'
       new_game.game_grid[5, 2] = 'x'
       new_game.game_grid[6, 2] = 'x'
-      returned_val = new_game.check_vertical_alignment(player_one)
-      expect(returned_val).to eq(true)
+      returned_val = new_game.vertical_alignment?(player_one)
+      expect(returned_val).to be true
+      end
+    end
+  end
+
+  describe '#horizontal_alignment?' do
+    context 'When elements are empty spaces' do
+      it 'returns false' do
+        returned_val = new_game.horizontal_alignment?(player_one)
+        expect(returned_val).to be false
+      end
+    end
+    context 'When there is horizontal alignment anywhere on the grid' do
+      it 'returns true for random condition 1' do
+      new_game.game_grid[1, 0] = 'x'
+      new_game.game_grid[1, 1] = 'x'
+      new_game.game_grid[1, 2] = 'x'
+      new_game.game_grid[1, 3] = 'x'
+      returned_val = new_game.horizontal_alignment?(player_one)
+      expect(returned_val).to be true
+      end
+
+      it 'returns true for random condition 2' do
+      new_game.game_grid[4, 6] = 'x'
+      new_game.game_grid[4, 5] = 'x'
+      new_game.game_grid[4, 4] = 'x'
+      new_game.game_grid[4, 3] = 'x'
+      returned_val = new_game.horizontal_alignment?(player_one)
+      expect(returned_val).to be true
+      end
+    end
+  end
+
+  describe "#aligned_to_right" do
+    context 'When elements are empty spaces' do
+      xit 'returns false' do
+        returned_val = new_game.aligned_to_right?
+        expect(returned_val).to be false
+      end
+    end
+    context 'When there is right leaning diagonal alignment anywhere on the grid' do
+      xit 'returns true for random condition 1' do
+      new_game.game_grid[1, 0] = 'x'
+      new_game.game_grid[2, 1] = 'x'
+      new_game.game_grid[3, 2] = 'x'
+      new_game.game_grid[4, 3] = 'x'
+      returned_val = new_game.aligned_to_right?
+      expect(returned_val).to be true
+      end
+
+      xit 'returns true for random condition 2' do
+      new_game.game_grid[3, 3] = 'x'
+      new_game.game_grid[4, 4] = 'x'
+      new_game.game_grid[5, 5] = 'x'
+      new_game.game_grid[6, 6] = 'x'
+      returned_val = new_game.aligned_to_right?
+      expect(returned_val).to be true
+      end
+
+      xit 'returns true for random condition 3' do
+        new_game.game_grid[2, 1] = 'x'
+        new_game.game_grid[3, 2] = 'x'
+        new_game.game_grid[4, 3] = 'x'
+        new_game.game_grid[5, 4] = 'x'
+        returned_val = new_game.aligned_to_right?
+        expect(returned_val).to be true
       end
     end
   end
