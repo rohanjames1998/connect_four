@@ -3,24 +3,26 @@ require_relative 'grid'
 require 'json'
 
 class ConnectFour
-  attr_reader :game_grid, :rounds, :p1, :p2
+  attr_reader :game_grid, :rounds, :p1, :p2, :quit
 
   def initialize(grid = Grid.new, p1 = Player.new, p2 = Player.new)
     @game_grid = grid
     @rounds = 0
     @p1 = p1
     @p2 = p2
+    @quit = false
   end
 
   def start_game
-    print 'Do you want to play a saved game[Y/N]:'
+    display_instructions
+    print "\nDo you want to play a saved game[Y/N]:"
     loop do
-      choice = gets.chomp.upcase.strip
+      break if quit == true
+      choice = gets.chomp.upcase.delete(' ')
       if choice == 'Y'
         load_saved_game
         play_game
       elsif choice =='N'
-        display_instructions
         get_players_names
         get_players_symbols
         play_game
@@ -33,7 +35,9 @@ class ConnectFour
   end
 
   def get_players_names(player_one = p1, player_two = p2)
+    print "Player 1! Please enter your name: "
     player_one.get_name
+    print "Player 2! Please enter your name: "
     loop do
       player_two.get_name
       if player_one.name == player_two.name
@@ -46,7 +50,9 @@ class ConnectFour
   end
 
   def get_players_symbols(player_one = p1, player_two = p2)
+    print "Player 1! Please enter a symbol (it can be anything except empty space): "
     player_one.get_symbol
+    print "Player 2! Please enter a symbol (it can be anything except empty space): "
     loop do
       player_two.get_symbol
       if player_one.symbol == player_two.symbol
@@ -61,10 +67,10 @@ class ConnectFour
   def play_game
     loop do
       round(p1)
-      break if end_game?(p1)
+      break if end_game?(p1) || rounds >= 42 || @quit
 
       round(p2)
-      break if end_game?(p2)
+      break if end_game?(p2) || rounds >= 42 || @quit
     end
   end
 
@@ -72,18 +78,20 @@ class ConnectFour
     puts "\n#{player.name}'s turn"
     game_grid.display_grid
     get_player_input(player)
-    rounds += 1
+    @rounds += 1
   end
 
   def get_player_input(player)
     loop do
-      input = gets.chomp.downcase.strip
+      input = gets.chomp.downcase.delete(' ')
       case
       when input == 'quit'
-        return
+        @quit = true
+        break
       when input == 'save&quit'
         save_game
-        return
+        @quit = true
+        break
       when input == 'save'
         save_game
         next
@@ -114,7 +122,7 @@ class ConnectFour
   # to tell the user about different formats of valid input.
   # Main use of this function is to DRY the code.
   def display_valid_inputs
-    puts "There are two different types of input format supported in this game.
+    puts "\nThere are two different types of input format supported in this game.
     Type 1 = R1C1. Here 'R1' is the row coordinate and 'C1' is the column coordinate. Note there
     are no spaces or commas between the characters.
     Type 2 = 1, 1. This is also a valid short hand. Note that each character is
@@ -129,12 +137,14 @@ class ConnectFour
   end
 
   def display_instructions
-    puts "\nThe goal of this game is to align four of your symbols vertically, horizontally or diagonally."
-         "Each round you would be prompted to enter the place where you want to put your symbol."
-         "Instead of putting in coordinates for your symbol placement you can also use the follow keywords:"
-         "1. Quit: To end the game."
-         "2. Save&Quit: To save and quit the game."
+    puts "\nThe goal of this game is to align four of your symbols vertically, horizontally or diagonally.",
+         "Each round you would be prompted to enter the place where you want to put your symbol.",
+         "Instead of putting in coordinates for your symbol placement you can also use the follow keywords:",
+         "1. Quit: To end the game.",
+         "2. Save&Quit: To save and quit the game.",
          "3. Save: To save the game in its current state. You can load this game when you play the game again in the future."
+         display_valid_inputs
+  end
 
   def end_game?(player)
     vertically_aligned = vertical_alignment?(player)
@@ -195,7 +205,7 @@ class ConnectFour
   end
 
   def diagonal_alignment?(player)
-    return aligned_to_right? || aligned_to_left? ? true : false
+    return aligned_to_right?(player) || aligned_to_left?(player) ? true : false
   end
 
   def aligned_to_right?(player)
@@ -264,10 +274,6 @@ class ConnectFour
     return false
   end
 
-
-
-
-
   private
 
   def save_game
@@ -275,12 +281,12 @@ class ConnectFour
       print "\nEnter the name of your save file:"
       file_name = gets.chomp.downcase.strip
       file_name += '.json'
-      complete_file_name = File.join('../saved_games', file_name)
+      complete_file_name = File.join('./saved_games', file_name)
       if File.exists?(complete_file_name)
         puts 'A save file with that name already exists.'
              next
       else
-        File.open(save_file, 'w') do |file|
+        File.open(complete_file_name, 'w') do |file|
           file.write(convert_to_json(p1, p2, game_grid, rounds))
         end
         puts "\nYour game has been successfully saved."
