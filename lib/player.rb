@@ -10,12 +10,12 @@ class Player
 
   def get_name
     loop do
-      name = gets.chomp.capitalize
+      name = gets.chomp.capitalize.strip
       if name.length > 10
         puts "Please enter a smaller name."
         next
       else
-        self.name = name
+        @name = name
         break
       end
     end
@@ -23,16 +23,16 @@ class Player
 
   def get_symbol
     loop do
-      symbol = gets.chomp
+      symbol = gets.chomp.delete(' ')
       case
       when symbol.length > 1
-        puts 'Please keep your symbol limited to one character.'
+        print 'Please keep your symbol limited to one character: '
         next
       when symbol.length < 1 || /\s+/.match(symbol)
-        puts 'Your symbol cannot be empty.'
+        print 'Your symbol cannot be empty: '
         next
       else
-        self.symbol = symbol
+        @symbol = symbol
         break
       end
     end
