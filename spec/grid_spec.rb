@@ -31,24 +31,24 @@ describe Grid do
     end
   end
 
-  describe '#find_ele' do
-    context 'When given valid input' do
-      it 'returns element at the specified location' do
+  describe '#str_to_location' do
+    context 'When given valid input as a string' do
+      it 'returns row and col as integers in an array' do
         game_grid.make_grid
         valid_input = 'r3c4'
-        expected_result = ' '
-        ele_received = game_grid.find_ele(valid_input)
+        expected_result = [3, 4]
+        ele_received = game_grid.str_to_location(valid_input)
         expect(ele_received).to eq(expected_result)
       end
     end
 
     context 'When given invalid input' do
       it 'returns nil' do
-        expected_result = nil
         game_grid.make_grid
-        invalid_input = 'r1r7'
-        ele_received = game_grid.find_ele(invalid_input)
-        expect(ele_received).to eq(expected_result)
+        invalid_input = '00,00'
+        expected_result = nil
+        result = game_grid.str_to_location(invalid_input)
+        expect(result).to eq(expected_result)
       end
     end
   end
