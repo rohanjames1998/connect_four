@@ -19,17 +19,20 @@ class ConnectFour
     print "\nDo you want to play a saved game[Y/N]:"
     loop do
       break if quit == true
+
       choice = gets.chomp.upcase.delete(' ')
       if choice == 'Y'
         load_saved_game
         play_game
-      elsif choice =='N'
+        break
+      elsif choice == 'N'
         get_players_names
         get_players_symbols
         play_game
+        break
       else
         puts 'Please enter Y if u want to play a saved gamed.',
-        'Or N if you want to play a new game.'
+             'Or N if you want to play a new game.'
         next
       end
     end
@@ -145,7 +148,7 @@ class ConnectFour
          "1. Quit: To end the game.",
          "2. Save&Quit: To save and quit the game.",
          "3. Save: To save the game in its current state. You can load this game when you play the game again in the future."
-         display_valid_inputs
+    display_valid_inputs
   end
 
   def end_game?(player)
@@ -156,6 +159,11 @@ class ConnectFour
       congrats_screen(player)
       return true
     end
+  end
+
+  def congrats_screen(player)
+    puts "Congratulations! \n#{player.name} has won the game. We hope you had fun while playing this game.",
+         "Thank you for playing :)"
   end
 
   def vertical_alignment?(player)
@@ -188,10 +196,10 @@ class ConnectFour
     row = 0
     col = 0
     aligned_array = []
-    #Outer loops cuts of when we check every row
+    # Outer loops cuts of when we check every row
     while row <= 6
       row += 1
-      #Inner loop runs through each column's element and checks for alignment.
+      # Inner loop runs through each column's element and checks for alignment.
       while col <= 6
         if game_grid[row, col] == player_sym
           aligned_array << player_sym
@@ -288,7 +296,7 @@ class ConnectFour
       complete_file_name = File.join(path, file_name)
       if File.exists?(complete_file_name)
         puts 'A save file with that name already exists.'
-             next
+        next
       else
         File.open(complete_file_name, 'w') do |file|
           file.write(convert_to_json(p1, p2, game_grid, rounds))
@@ -316,40 +324,39 @@ class ConnectFour
     puts "\nPlease choose a save file:"
     Dir.each_child(path) do |file|
       saved_file_name = file.split('.')[0]
-      puts saved_file_name #Showing file names to for user to choose from.
+      puts saved_file_name # Showing file names to for user to choose from.
     end
-      user_input = get_file_name
-      file_selected = File.read(user_input)
-      saved_data = JSON.parse(file_selected)
-      p1.name = saved_data['p1_name']
-      p1.symbol = saved_data['p1_sym']
-      p2.name = saved_data['p2_name']
-      p2.symbol = saved_data['p2_sym']
-      game_grid.grid = convert_json_back(saved_data['grid_data'])
-      rounds = saved_data['rounds']
+    user_input = get_file_name
+    file_selected = File.read(user_input)
+    saved_data = JSON.parse(file_selected)
+    p1.name = saved_data['p1_name']
+    p1.symbol = saved_data['p1_sym']
+    p2.name = saved_data['p2_name']
+    p2.symbol = saved_data['p2_sym']
+    game_grid.grid = convert_json_back(saved_data['grid_data'])
+    rounds = saved_data['rounds']
+  end
+end
+
+def convert_json_back(json_hash)
+  converted_hash = Hash.new
+  row = 1
+  json_hash.each_value do |val|
+    converted_hash[row] = val
+    row += 1
+  end
+  return converted_hash
+end
+
+def get_file_name
+  loop do
+    name = gets.chomp.downcase.strip
+    file_name_with_path = File.join('./saved_games', name)
+    if File.exist?("#{file_name_with_path}.json")
+      return "#{file_name_with_path}.json"
+    else
+      print "Please enter a valid file name:"
+      next
     end
   end
-
-  def convert_json_back(json_hash)
-    converted_hash = Hash.new
-    row = 1
-    json_hash.each_value do |val|
-      converted_hash[row] = val
-      row += 1
-    end
-    return converted_hash
-  end
-
-
-  def get_file_name
-    loop do
-      name = gets.chomp.downcase.strip
-      file_name_with_path = File.join('./saved_games', name)
-      if File.exist?("#{file_name_with_path}.json")
-        return "#{file_name_with_path}.json"
-      else
-        print "Please enter a valid file name:"
-        next
-      end
-    end
-  end
+end
