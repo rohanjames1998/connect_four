@@ -301,9 +301,12 @@ class ConnectFour
 
   def convert_to_json(p1, p2, game_grid, rounds)
     hash = {
-      'p1' => p1,
-      'p2' => p2,
+      'p1_name' => p1.name,
+      'p1_sym' => p1.symbol,
+      'p2_name' => p2.name,
+      'p2_sym' => p2.symbol,
       'game_grid' => game_grid,
+      'grid_data' => game_grid.grid,
       'rounds' => rounds,
     }.to_json
   end
@@ -315,15 +318,28 @@ class ConnectFour
       saved_file_name = file.split('.')[0]
       puts saved_file_name #Showing file names to for user to choose from.
     end
-      file_selected = get_file_name
+      user_input = get_file_name
       file_selected = File.read(user_input)
       saved_data = JSON.parse(file_selected)
-      p1 = saved_data['p1']
-      p2 = saved_data['p2']
-      game_grid = saved_data['game_grid']
+      p1.name = saved_data['p1_name']
+      p1.symbol = saved_data['p1_sym']
+      p2.name = saved_data['p2_name']
+      p2.symbol = saved_data['p2_sym']
+      game_grid.grid = convert_json_back(saved_data['grid_data'])
       rounds = saved_data['rounds']
     end
   end
+
+  def convert_json_back(json_hash)
+    converted_hash = Hash.new
+    row = 1
+    json_hash.each_value do |val|
+      converted_hash[row] = val
+      row += 1
+    end
+    return converted_hash
+  end
+
 
   def get_file_name
     loop do
